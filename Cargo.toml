@@ -25,4 +25,5 @@ maintenance = { status = "experimental" }
 
 [dependencies]
 hum = "0.5.0"
+iced = "0.2.0"
 

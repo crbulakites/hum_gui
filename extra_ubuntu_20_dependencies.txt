@@ -1,0 +1,2 @@
+sudo apt install libx11-dev
+sudo apt-get install libfontconfig libfontconfig1-dev
