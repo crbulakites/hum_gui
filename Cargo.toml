@@ -1,0 +1,28 @@
+[package]
+name = "hum_gui"
+version = "0.1.0"
+authors = ["Connor Bulakites <connor@bulakites.net>"]
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+    "LICENSE",
+    "DISCLAIMER",
+    "README.md",
+]
+description = "A GUI for the Hum notation language and synthesizer."
+repository = "https://github.com/crbulakites/hum_gui"
+readme = "README.md"
+keywords = ["music", "notation", "synthesizer", "sine", "wave"]
+categories = ["multimedia", "multimedia::audio"]
+license = "GPL-3.0-or-later"
+
+[[bin]]
+name = "hum_gui"
+path = "src/bin.rs"
+
+[badges]
+maintenance = { status = "experimental" }
+
+[dependencies]
+hum = "0.5.0"
+
