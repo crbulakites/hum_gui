@@ -16,6 +16,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 extern crate iced;
 
 use iced::{Column, Element, Sandbox, Settings, Text};
+use iced::text_input;
 
 pub fn main() -> iced::Result {
     HumGui::run(Settings::default())
@@ -23,10 +24,13 @@ pub fn main() -> iced::Result {
 
 #[derive(Default)]
 struct HumGui {
+    input: text_input::State,
+    score: String,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 enum Message {
+    ScoreUpdated(String),
 }
 
 impl Sandbox for HumGui {
@@ -41,11 +45,24 @@ impl Sandbox for HumGui {
     }
 
     fn update(&mut self, message: Message) {
+        match message {
+            Message::ScoreUpdated(score) => {
+                self.score = score;
+            }
+        }
     }
 
     fn view(&mut self) -> Element<Message> {
+        let input = text_input::TextInput::new(
+            &mut self.input,
+            "Enter the score here...",
+            &self.score,
+            Message::ScoreUpdated,
+        );
+
         Column::new()
-            .push(Text::new("Hello, world!"))
+            .push(input)
+            .push(Text::new(&self.score))
             .into()
     }
 }
