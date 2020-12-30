@@ -13,15 +13,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+extern crate hum;
 extern crate iced;
 
 use iced::{
     button,
+    executor,
     scrollable,
     text_input,
+    Application,
     Button,
+    Command,
     Element,
-    Sandbox,
     Scrollable,
     Settings,
     Text,
@@ -39,38 +42,70 @@ struct HumGui {
     score: String,
     read_button: button::State,
     play_button: button::State,
+    playback_state: bool,
 }
 
 #[derive(Debug, Clone)]
 enum Message {
     UpdateScorePath(String),
     LoadScore,
-    PlayScore,
+    StartPlayback,
+    StopPlayback,
 }
 
-impl Sandbox for HumGui {
+impl Application for HumGui {
+    type Executor = executor::Default;
     type Message = Message;
+    type Flags = ();
 
-    fn new() -> Self {
-        Self::default()
+    fn new(_flags: ()) -> (HumGui, Command<Message>) {
+        (
+            HumGui {
+                scroll_state: scrollable::State::new(),
+                score_path_input: text_input::State::new(),
+                score_path: String::new(),
+                score: String::new(),
+                read_button: button::State::new(),
+                play_button: button::State::new(),
+                playback_state: false,
+            },
+            Command::none(),
+        )
     }
 
     fn title(&self) -> String {
         String::from("Hum Editor")
     }
 
-    fn update(&mut self, message: Message) {
+    fn update(&mut self, message: Message) -> Command<Message> {
         match message {
             Message::UpdateScorePath(score_path) => {
                 self.score_path = score_path;
+                Command::none()
             }
             Message::LoadScore => {
                 let score_contents = hum::hum_io::read(&self.score_path);
                 self.score = score_contents;
+                Command::none()
             }
-            Message::PlayScore => {
-                hum::play(self.score.clone());
+            Message::StartPlayback => {
+                match self.playback_state {
+                    false => {
+                        self.playback_state = true;
+                        Command::perform(
+                            HumGui::play_in_background(self.score.clone()),
+                            |_| Message::StopPlayback,
+                        )
+                    }
+                    true => {
+                        Command::none()
+                    }
+                }
             }
+            Message::StopPlayback => {
+                self.playback_state = false;
+                Command::none()
+            } 
         }
     }
 
@@ -90,10 +125,17 @@ impl Sandbox for HumGui {
             )
             .push(
                 Button::new(&mut self.play_button, Text::new("Play Score"))
-                .on_press(Message::PlayScore)
+                .on_press(Message::StartPlayback)
             )
             .push(Text::new(&self.score))
             .into()
+    }
+}
+
+
+impl HumGui {
+    async fn play_in_background(score: String) {
+        hum::play(score);
     }
 }
 
