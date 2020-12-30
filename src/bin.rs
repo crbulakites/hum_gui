@@ -15,9 +15,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 extern crate iced;
 
-use iced::{scrollable, Scrollable, Button, Column, Element, Sandbox, Settings, Text};
-use iced::text_input;
-use iced::button;
+use iced::{
+    button,
+    scrollable,
+    text_input,
+    Button,
+    Element,
+    Sandbox,
+    Scrollable,
+    Settings,
+    Text,
+};
 
 pub fn main() -> iced::Result {
     HumGui::run(Settings::default())
@@ -25,19 +33,19 @@ pub fn main() -> iced::Result {
 
 #[derive(Default)]
 struct HumGui {
-    input: text_input::State,
-    read_button: button::State,
-    play_button: button::State,
     scroll_state: scrollable::State,
+    score_path_input: text_input::State,
     score_path: String,
     score: String,
+    read_button: button::State,
+    play_button: button::State,
 }
 
 #[derive(Debug, Clone)]
 enum Message {
+    UpdateScorePath(String),
     LoadScore,
     PlayScore,
-    ScorePathUpdated(String),
 }
 
 impl Sandbox for HumGui {
@@ -53,6 +61,9 @@ impl Sandbox for HumGui {
 
     fn update(&mut self, message: Message) {
         match message {
+            Message::UpdateScorePath(score_path) => {
+                self.score_path = score_path;
+            }
             Message::LoadScore => {
                 let score_contents = hum::hum_io::read(&self.score_path);
                 self.score = score_contents;
@@ -60,22 +71,19 @@ impl Sandbox for HumGui {
             Message::PlayScore => {
                 hum::play(self.score.clone());
             }
-            Message::ScorePathUpdated(score_path) => {
-                self.score_path = score_path;
-            }
         }
     }
 
     fn view(&mut self) -> Element<Message> {
-        let input = text_input::TextInput::new(
-            &mut self.input,
+        let score_path_input = text_input::TextInput::new(
+            &mut self.score_path_input,
             "Enter the path to the *.hum score file here...",
             &self.score_path,
-            Message::ScorePathUpdated,
+            Message::UpdateScorePath,
         );
 
         Scrollable::new(&mut self.scroll_state)
-            .push(input)
+            .push(score_path_input)
             .push(
                 Button::new(&mut self.read_button, Text::new("Load Score"))
                 .on_press(Message::LoadScore)
