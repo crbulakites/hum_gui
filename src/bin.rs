@@ -15,7 +15,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 extern crate iced;
 
-use iced::{Button, Column, Element, Sandbox, Settings, Text};
+use iced::{scrollable, Scrollable, Button, Column, Element, Sandbox, Settings, Text};
 use iced::text_input;
 use iced::button;
 
@@ -28,6 +28,7 @@ struct HumGui {
     input: text_input::State,
     read_button: button::State,
     play_button: button::State,
+    scroll_state: scrollable::State,
     score_path: String,
     score: String,
 }
@@ -73,7 +74,7 @@ impl Sandbox for HumGui {
             Message::ScorePathUpdated,
         );
 
-        Column::new()
+        Scrollable::new(&mut self.scroll_state)
             .push(input)
             .push(
                 Button::new(&mut self.read_button, Text::new("Load Score"))
