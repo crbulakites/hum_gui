@@ -13,11 +13,40 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+extern crate iced;
 
-extern crate hum;
+use iced::{Column, Element, Sandbox, Settings, Text};
 
+pub fn main() -> iced::Result {
+    HumGui::run(Settings::default())
+}
 
-fn main() {
-    println!("Hello, world!");
+#[derive(Default)]
+struct HumGui {
+}
+
+#[derive(Debug, Clone, Copy)]
+enum Message {
+}
+
+impl Sandbox for HumGui {
+    type Message = Message;
+
+    fn new() -> Self {
+        Self::default()
+    }
+
+    fn title(&self) -> String {
+        String::from("Hum Editor")
+    }
+
+    fn update(&mut self, message: Message) {
+    }
+
+    fn view(&mut self) -> Element<Message> {
+        Column::new()
+            .push(Text::new("Hello, world!"))
+            .into()
+    }
 }
 
