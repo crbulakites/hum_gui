@@ -16,6 +16,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 extern crate hum;
 extern crate iced;
 
+use std::env;
+
 use iced::{
     button,
     executor,
@@ -84,7 +86,10 @@ impl Application for HumGui {
                 Command::none()
             }
             Message::LoadScore => {
-                let score_contents = hum::hum_io::read(&self.score_path);
+                let cwd = env::current_dir().unwrap();
+                let complete_path = format!("{}/{}", cwd.display(), self.score_path);
+                
+                let score_contents = hum::hum_io::read(&complete_path);
                 self.score = score_contents;
                 Command::none()
             }
