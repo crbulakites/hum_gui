@@ -32,6 +32,9 @@ use iced::{
     Text,
 };
 
+mod style;
+
+
 pub fn main() -> iced::Result {
     HumGui::run(Settings::default())
 }
@@ -122,19 +125,23 @@ impl Application for HumGui {
             Message::UpdateScorePath,
         );
 
-        let playback_state = if self.playback_state { "Streaming" } else { "Idle" };
+        let play_button = if self.playback_state {
+            Button::new(&mut self.play_button, Text::new("Play Score"))
+            .style(style::Button)
+        } else {
+            Button::new(&mut self.play_button, Text::new("Play Score"))
+            .style(style::Button)
+            .on_press(Message::StartPlayback)
+        };
 
         Scrollable::new(&mut self.scroll_state)
             .push(score_path_input)
             .push(
                 Button::new(&mut self.read_button, Text::new("Load Score"))
                 .on_press(Message::LoadScore)
+                .style(style::Button)
             )
-            .push(
-                Button::new(&mut self.play_button, Text::new("Play Score"))
-                .on_press(Message::StartPlayback)
-            )
-            .push(Text::new(format!("Playback: {}", playback_state)))
+            .push(play_button)
             .push(Text::new(&self.score))
             .into()
     }
