@@ -117,6 +117,8 @@ impl Application for HumGui {
             Message::UpdateScorePath,
         );
 
+        let playback_state = if self.playback_state { "Streaming" } else { "Idle" };
+
         Scrollable::new(&mut self.scroll_state)
             .push(score_path_input)
             .push(
@@ -127,6 +129,7 @@ impl Application for HumGui {
                 Button::new(&mut self.play_button, Text::new("Play Score"))
                 .on_press(Message::StartPlayback)
             )
+            .push(Text::new(format!("Playback: {}", playback_state)))
             .push(Text::new(&self.score))
             .into()
     }
@@ -135,7 +138,11 @@ impl Application for HumGui {
 
 impl HumGui {
     async fn play_in_background(score: String) {
-        hum::play(score);
+        println!("Playback started");
+        match hum::play(score) {
+            Ok(_) => println!("Playback completed successfully"),
+            Err(_) => println!("Playback failed"),
+        }
     }
 }
 
